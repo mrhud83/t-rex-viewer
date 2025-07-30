@@ -2,32 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>T. Rex Model Viewer</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <title>T-Rex Viewer</title>
   <style>
-    body { margin: 0; background: transparent; }
-    model-viewer {
-      width: 100vw;
-      height: 100vh;
-      background-color: transparent;
+    html, body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      display: block;
     }
   </style>
 </head>
 <body>
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
 
-<model-viewer 
-  src="SK_T_Rex_Anim_Clips_Box.glb"
-  ar 
-  ar-modes="webxr scene-viewer quick-look"
-  camera-controls
-  tone-mapping="aces"
-  poster="https://modelviewer.dev/shared-assets/models/Astronaut.webp"
-  shadow-intensity="0"
-  autoplay
-  environment-image="https://modelviewer.dev/shared-assets/environments/pillars_1k.hdr"
-  exposure="1.64"
-  style="background-color: transparent;">
-</model-viewer>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.5, 4);
 
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    const light = new THREE.DirectionalLight(0xffffff, 1.5);
+    light.position.set(3, 10, 5);
+    scene.add(light);
+
+    const loader = new GLTFLoader();
+    loader.load(
+      './SK_T_Rex_Anim_Clips_Box.glb',
+      gltf => {
+        const model = gltf.scene;
+        model.scale.set(1, 1, 1);
+        scene.add(model);
+      },
+      undefined,
+      error => {
+        console.error('GLB load error:', error);
+      }
+    );
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+  </script>
 </body>
 </html>
