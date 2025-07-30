@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>T-Rex Viewer</title>
   <style>
     html, body {
@@ -15,11 +15,11 @@
   </style>
 </head>
 <body>
-  <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
 
+  <script>
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(0, 1.5, 4);
@@ -30,24 +30,24 @@
     renderer.outputEncoding = THREE.sRGBEncoding;
     document.body.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
     const light = new THREE.DirectionalLight(0xffffff, 1.5);
     light.position.set(3, 10, 5);
     scene.add(light);
 
-    const loader = new GLTFLoader();
+    const loader = new THREE.GLTFLoader();
     loader.load(
       './SK_T_Rex_Anim_Clips_Box.glb',
-      gltf => {
+      function (gltf) {
         const model = gltf.scene;
         model.scale.set(1, 1, 1);
         scene.add(model);
       },
       undefined,
-      error => {
-        console.error('GLB load error:', error);
+      function (error) {
+        console.error('Error loading model:', error);
       }
     );
 
